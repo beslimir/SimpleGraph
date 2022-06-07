@@ -24,8 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .align(CenterHorizontally),
-                    range = listOf(1, 3, 2, 6, 5, 8, 7, 9)
+                        .align(CenterHorizontally)
                 )
             }
         }

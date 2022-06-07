@@ -14,18 +14,22 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SimpleGraph(
     modifier: Modifier = Modifier,
-    range: List<Int> = emptyList()
+    viewModel: NumberGenerator = hiltViewModel()
 ) {
+
+    val state = viewModel.state
+
     val spacing = 100f
-    val upperValue = remember(range) {
-        range.maxOfOrNull { it.plus(1) } ?: 0
+    val upperValue = remember(state.generatedList) {
+        state.generatedList.maxOfOrNull { it.plus(1) } ?: 0
     }
-    val lowerValue = remember(range) {
-        range.minOfOrNull { it } ?: 0
+    val lowerValue = remember(state.generatedList) {
+        state.generatedList.minOfOrNull { it } ?: 0
     }
     val density = LocalDensity.current
     val textPaint = remember(density) {
@@ -75,9 +79,9 @@ fun SimpleGraph(
 
         val strokePath = Path().apply {
             val height = size.height
-            for (i in range.indices) {
-                val currValue = range[i]
-                val nextValue = range.getOrNull(i + 1) ?: range.last()
+            for (i in state.generatedList.indices) {
+                val currValue = state.generatedList[i]
+                val nextValue = state.generatedList.getOrNull(i + 1) ?: state.generatedList.last() + 1
 
                 val x1 = spacing + i * perHour
                 val y1 = height - currValue * (height / 10)
@@ -89,10 +93,10 @@ fun SimpleGraph(
                 }
                 val lastX = (x1 + x2) / 2f
                 val lastY = (y1 + y2) / 2f
-//                quadraticBezierTo(x1, y1, x2, y2)
-                quadraticBezierTo(
-                    x1, y1, lastX, lastY
-                )
+                quadraticBezierTo(x1, y1, x2, y2)
+//                quadraticBezierTo(
+//                    x1, y1, lastX, lastY
+//                )
 
                 Log.d("points", "x1: $x1 y1: $y1")
             }
