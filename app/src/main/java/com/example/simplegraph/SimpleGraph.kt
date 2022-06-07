@@ -6,8 +6,13 @@ import androidx.compose.ui.Modifier
 import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -32,9 +37,11 @@ fun SimpleGraph(
     }
 
     Canvas(modifier = modifier) {
-        val perHour = (size.width - spacing) / range.size
-        (range.indices).forEach { i ->
-            val currentValue = range[i]
+        //horizontal
+        val horizontalLine = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        val perHour = (size.width - spacing) / horizontalLine.size
+        (horizontalLine.indices).forEach { i ->
+            val currentValue = horizontalLine[i]
             drawContext.canvas.nativeCanvas.apply {
                 drawText(
                     currentValue.toString(),
@@ -49,13 +56,14 @@ fun SimpleGraph(
             }
         }
 
-        val priceStep = (upperValue - lowerValue) / 5f
-        (0..4).forEach { i ->
+        //vertical
+        val priceStep = 2
+        (1..10 step 2).forEach { i ->
             drawContext.canvas.nativeCanvas.apply {
                 drawText(
-                    (lowerValue + priceStep * i).toString(),
+                    i.toString(),
                     30f,
-                    size.height - spacing - i * size.height / 5f,
+                    size.height - i * size.height / 10,
                     textPaint
                 )
                 Log.d("myGraph", "value:${(lowerValue + priceStep * i)}" +
@@ -64,6 +72,40 @@ fun SimpleGraph(
                 )
             }
         }
+
+        val strokePath = Path().apply {
+            val height = size.height
+            for (i in range.indices) {
+                val currValue = range[i]
+                val nextValue = range.getOrNull(i + 1) ?: range.last()
+
+                val x1 = spacing + i * perHour
+                val y1 = height - currValue * (height / 10)
+                val x2 = spacing + (i + 1) * perHour
+                val y2 = height - nextValue * (height / 10)
+
+                if (i == 0) {
+                    moveTo(x1, y1)
+                }
+                val lastX = (x1 + x2) / 2f
+                val lastY = (y1 + y2) / 2f
+//                quadraticBezierTo(x1, y1, x2, y2)
+                quadraticBezierTo(
+                    x1, y1, lastX, lastY
+                )
+
+                Log.d("points", "x1: $x1 y1: $y1")
+            }
+        }
+
+        drawPath(
+            path = strokePath,
+            color = Color.Blue,
+            style = Stroke(
+                width = 3.dp.toPx(),
+                cap = StrokeCap.Round
+            )
+        )
     }
 
 }

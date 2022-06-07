@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxWidth()
                         .height(250.dp)
                         .align(CenterHorizontally),
-                    range = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                    range = listOf(1, 3, 2, 6, 5, 8, 7, 9)
                 )
             }
         }
